@@ -144,14 +144,14 @@ const Editor = () => {
     }
     const imageCrop = () => {
         const canvas = document.createElement('canvas')
-        const scaleX = details?.naturalWidth / details?.width
-        const scaleY = details?.naturalHeight / details?.height
+        const scaleX = (details as HTMLImageElement)?.naturalWidth / (details as HTMLImageElement)?.width;
+        const scaleY = (details as HTMLImageElement)?.naturalHeight / (details as HTMLImageElement)?.height
         canvas.width = crop.width
         canvas.height = crop.height
         const ctx = canvas.getContext('2d')
 
         ctx?.drawImage(
-            details,
+            details as HTMLImageElement,
             crop.x * scaleX,
             crop.y * scaleY,
             crop.width * scaleX,
@@ -182,7 +182,7 @@ const Editor = () => {
         ctx?.scale(state.vartical, state.horizental)
 
         ctx?.drawImage(
-            details,
+            details as HTMLImageElement,
             -canvas.width / 2,
             -canvas.height / 2,
             canvas.width,
