@@ -42,7 +42,8 @@ const Editor = () => {
     )
     const [details, setDetails] = useState<HTMLImageElement | string | null>('')
     const [crop, setCrop] = useState<Crop>({ unit: '%', width: 100, x: 0, y: 0, height: 100 })
-    const [state, setState] = useState<IState>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [state, setState] = useState<IState & { [key: string]: any }>({
         image: '',
         brightness: 100,
         grayscale: 0,
