@@ -171,8 +171,8 @@ const Editor = () => {
     }
     const saveImage = () => {
         const canvas = document.createElement('canvas')
-        canvas.width = details?.naturalHeight
-        canvas.height = details?.naturalHeight
+        canvas.width = (details as HTMLImageElement)?.naturalWidth
+        canvas.height = (details as HTMLImageElement)?.naturalHeight
         const ctx = canvas.getContext('2d')
 
         ctx!.filter = `brightness(${state.brightness}%) brightness(${state.brightness}%) sepia(${state.sepia}%) saturate(${state.saturate}%) contrast(${state.contrast}%) grayscale(${state.grayscale}%) hue-rotate(${state.hueRotate}deg)`
