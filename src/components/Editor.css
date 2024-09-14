@@ -1,14 +1,16 @@
 .image_editor {
-  /* width: 100vw; */
-  /* height: 100vh; */
+  width: 75vw;
+  height: 50vh;
   background-color: #e1e6ef;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-left: -5rem;
+  margin-top: 5rem;
   .card {
     padding: 28px;
-    width: 700px;
-    height: 80%;
+    width: 100%;
+    height: 100%;
     background-color: #fff;
     box-shadow: 0 8px 16px 0px rgb(201, 201, 201);
     .card_header {
@@ -16,25 +18,33 @@
       padding-bottom: 15px;
       h2 {
         text-transform: uppercase;
-        color: #e52fcf;
+        color: #4a55f3;
       }
     }
     .card_body {
       display: flex;
       justify-content: center;
+      gap: 1rem;
       .sidebar {
-        .reset {
+        .action-buttons {
           margin-top: 20px;
+          display: flex;
+          flex-direction: row;
+          align-items: flex-end;
+          justify-content: flex-end;
           .save {
-            background-color: #e335f3 !important;
+            background-color: green !important;
             margin-left: 5px;
           }
+          .reset {
+            background-color: grey;
+          }
           button {
-            background-color: rgb(242, 53, 85);
+            /* background-color: rgb(242, 53, 85); */
             padding: 8px;
-            border-radius: 3px;
-            outline: none;
-            border: 1px solid #dad7d7;
+            /* border-radius: 3px; */
+            /* outline: none; */
+            /* border: 1px solid #dad7d7; */
             cursor: pointer;
             color: #fff;
             font-weight: 600;
@@ -53,7 +63,7 @@
           border: 1px solid #c3c5c4;
           margin-right: 8px;
           height: 300px;
-          padding: 10px;
+          padding: 24px;
           .filter_key {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -89,7 +99,11 @@
               width: 100%;
             }
           }
+          .filter_section {
+            text-align: left;
+          }
           .rotate {
+            text-align: left;
             label {
               margin-bottom: 8px;
               display: block;
@@ -116,8 +130,8 @@
       .image_section {
         margin-left: 8px;
         width: 350px;
+        height: 350px;
         background-color: #f0f0f0;
-        height: 300px;
         .image {
           width: 100%;
           height: 100%;
@@ -153,14 +167,14 @@
         .image_select {
           margin: 20px 0px;
           display: flex;
-          justify-content: flex-end;
+          justify-content: flex-start;
           input {
             display: none;
           }
           label,
           button {
             padding: 8px;
-            border-radius: 3px;
+            border-radius: 8px;
             outline: none;
             border: 1px solid #dad7d7;
             cursor: pointer;
@@ -171,18 +185,19 @@
           }
           .redo,
           .undo {
-            background-color: #4a55f3;
+            background-color: gray;
             margin-left: 5px;
             color: #fff;
             padding: 5px 10px;
             font-size: 18px;
           }
           label {
-            background-color: #115811;
+            background-color: green;
             margin-left: 5px;
           }
           .crop {
-            background-color: #8e33b7;
+            /* background-color: #8e33b7; */
+            background-color: #4a55f3;
             margin-left: 5px;
           }
         }

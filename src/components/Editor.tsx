@@ -202,38 +202,7 @@ const Editor = () => {
                     <h2>Image Editor</h2>
                 </div>
                 <div className="card_body">
-                    <div className="sidebar">
-                        <div className="side_body">
-                            <div className="filter_section">
-                                <span>Filters</span>
-                                <div className="filter_key">
-                                    {
-                                        filterElement.map((v, i) => <button className={property.name === v.name ? 'active' : ''} onClick={() => setProperty(v)} key={i} >{v.name}</button>)
-                                    }
-                                </div>
-                            </div>
-                            <div className="filter_slider">
-                                <div className="label_bar">
-                                    <label htmlFor="range">Filter adjustment</label>
-                                    <span>{state[property.name]}%</span>
-                                </div>
-                                <input name={property.name} onChange={inputHandle} value={state[property.name]} max={property.maxValue} type="range" />
-                            </div>
-                            <div className="rotate">
-                                <label htmlFor="">Rotate & Filp</label>
-                                <div className="icon">
-                                    <div onClick={leftRotate}><GrRotateLeft /></div>
-                                    <div onClick={rightRotate}><GrRotateRight /></div>
-                                    <div onClick={varticalFlip}><CgMergeVertical /></div>
-                                    <div onClick={horizentalFlip}><CgMergeHorizontal /></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="reset">
-                            <button>Reset</button>
-                            <button onClick={saveImage} className='save'>Save Image</button>
-                        </div>
-                    </div>
+
                     <div className="image_section">
                         <div className="image">
                             {
@@ -247,13 +216,47 @@ const Editor = () => {
                             }
                         </div>
                         <div className="image_select">
-                            <button onClick={undo} className='undo'><IoMdUndo /></button>
-                            <button onClick={redo} className='redo'><IoMdRedo /></button>
+                            <label htmlFor="choose">Choose Image</label>
+                            <input onChange={imageHandle} type="file" id='choose' />
                             {
                                 crop && <button onClick={imageCrop} className='crop'>Crop Image</button>
                             }
-                            <label htmlFor="choose">Choose Image</label>
-                            <input onChange={imageHandle} type="file" id='choose' />
+                            <button onClick={undo} className='undo'><IoMdUndo /></button>
+                            <button onClick={redo} className='redo'><IoMdRedo /></button>
+                        </div>
+                    </div>
+                    <div className="sidebar">
+                        <div className="side_body">
+                            <div className="rotate">
+                                <label htmlFor="">Rotate & Filp</label>
+                                <div className="icon">
+                                    <div onClick={leftRotate}><GrRotateLeft /></div>
+                                    <div onClick={rightRotate}><GrRotateRight /></div>
+                                    <div onClick={varticalFlip}><CgMergeVertical /></div>
+                                    <div onClick={horizentalFlip}><CgMergeHorizontal /></div>
+                                </div>
+                            </div>
+                            <div className="filter_slider">
+                                <div className="label_bar">
+                                    <label htmlFor="range">Filter adjustment</label>
+                                    <span>{state[property.name]}%</span>
+                                </div>
+                                <input name={property.name} onChange={inputHandle} value={state[property.name]} max={property.maxValue} type="range" />
+                            </div>
+                            <div className="filter_section">
+                                <span>Filters</span>
+                                <div className="filter_key">
+                                    {
+                                        filterElement.map((v, i) => <button className={property.name === v.name ? 'active' : ''} onClick={() => setProperty(v)} key={i} >{v.name}</button>)
+                                    }
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div className="action-buttons">
+                            <button className='reset'>Reset</button>
+                            <button onClick={saveImage} className='save'>Save Image</button>
                         </div>
                     </div>
                 </div>
