@@ -1,14 +1,15 @@
 import { useState } from 'react'
-import ReactCrop from 'react-image-crop'
+import ReactCrop, { Crop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import { GrRotateLeft, GrRotateRight } from 'react-icons/gr'
 import { CgMergeVertical, CgMergeHorizontal } from 'react-icons/cg'
 import { IoMdUndo, IoMdRedo, IoIosImage } from 'react-icons/io'
 import storeData from './LinkedList';
 import "./Editor.css";
+import { IState } from "./Editor";
 
 const Editor = () => {
-    const filterElement = [
+    const filterElement: Array<{ name: string; maxValue?: number }> = [
         {
             name: 'brightness',
             maxValue: 200
@@ -33,15 +34,15 @@ const Editor = () => {
             name: 'hueRotate'
         }
     ]
-    const [property, setProperty] = useState(
+    const [property, setProperty] = useState<{ name: string; maxValue?: number }>(
         {
             name: 'brightness',
             maxValue: 200
         }
     )
-    const [details, setDetails] = useState('')
-    const [crop, setCrop] = useState('')
-    const [state, setState] = useState({
+    const [details, setDetails] = useState<HTMLImageElement | string | null>('')
+    const [crop, setCrop] = useState<Crop>({ unit: '%', width: 100, x: 0, y: 0, height: 100 })
+    const [state, setState] = useState<IState>({
         image: '',
         brightness: 100,
         grayscale: 0,
@@ -53,7 +54,8 @@ const Editor = () => {
         vartical: 1,
         horizental: 1
     })
-    const inputHandle = (e) => {
+
+    const inputHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
         setState({
             ...state,
             [e.target.name]: e.target.value
@@ -100,19 +102,20 @@ const Editor = () => {
     }
 
     const redo = () => {
-        const data = storeData.redoEdit()
+        const data = storeData.redoEdit() as IState;
         if (data) {
             setState(data)
         }
     }
     const undo = () => {
-        const data = storeData.undoEdit()
+        const data = storeData.undoEdit() as IState;
+
         if (data) {
             setState(data)
         }
     }
-    const imageHandle = (e) => {
-        if (e.target.files.length !== 0) {
+    const imageHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files?.length !== 0) {
 
             const reader = new FileReader()
 
@@ -141,13 +144,13 @@ const Editor = () => {
     }
     const imageCrop = () => {
         const canvas = document.createElement('canvas')
-        const scaleX = details.naturalWidth / details.width
-        const scaleY = details.naturalHeight / details.height
+        const scaleX = details?.naturalWidth / details?.width
+        const scaleY = details?.naturalHeight / details?.height
         canvas.width = crop.width
         canvas.height = crop.height
         const ctx = canvas.getContext('2d')
 
-        ctx.drawImage(
+        ctx?.drawImage(
             details,
             crop.x * scaleX,
             crop.y * scaleY,
@@ -168,17 +171,17 @@ const Editor = () => {
     }
     const saveImage = () => {
         const canvas = document.createElement('canvas')
-        canvas.width = details.naturalHeight
-        canvas.height = details.naturalHeight
+        canvas.width = details?.naturalHeight
+        canvas.height = details?.naturalHeight
         const ctx = canvas.getContext('2d')
 
-        ctx.filter = `brightness(${state.brightness}%) brightness(${state.brightness}%) sepia(${state.sepia}%) saturate(${state.saturate}%) contrast(${state.contrast}%) grayscale(${state.grayscale}%) hue-rotate(${state.hueRotate}deg)`
+        ctx!.filter = `brightness(${state.brightness}%) brightness(${state.brightness}%) sepia(${state.sepia}%) saturate(${state.saturate}%) contrast(${state.contrast}%) grayscale(${state.grayscale}%) hue-rotate(${state.hueRotate}deg)`
 
-        ctx.translate(canvas.width / 2, canvas.height / 2)
-        ctx.rotate(state.rotate * Math.PI / 180)
-        ctx.scale(state.vartical, state.horizental)
+        ctx?.translate(canvas.width / 2, canvas.height / 2)
+        ctx?.rotate(state.rotate * Math.PI / 180)
+        ctx?.scale(state.vartical, state.horizental)
 
-        ctx.drawImage(
+        ctx?.drawImage(
             details,
             -canvas.width / 2,
             -canvas.height / 2,
@@ -234,7 +237,7 @@ const Editor = () => {
                         <div className="image">
                             {
                                 state.image ? <ReactCrop crop={crop} onChange={c => setCrop(c)}>
-                                    <img onLoad={(e) => setDetails(e.currentTarget)} style={{ filter: `brightness(${state.brightness}%) brightness(${state.brightness}%) sepia(${state.sepia}%) saturate(${state.saturate}%) contrast(${state.contrast}%) grayscale(${state.grayscale}%) hue-rotate(${state.hueRotate}deg)`, transform: `rotate(${state.rotate}deg) scale(${state.vartical},${state.horizental})` }} src={state.image} alt="" />
+                                    <img onLoad={(e) => setDetails(e.currentTarget)} style={{ filter: `brightness(${state.brightness}%) brightness(${state.brightness}%) sepia(${state.sepia}%) saturate(${state.saturate}%) contrast(${state.contrast}%) grayscale(${state.grayscale}%) hue-rotate(${state.hueRotate}deg)`, transform: `rotate(${state.rotate}deg) scale(${state.vartical},${state.horizental})` }} src={state.image as string} alt="" />
                                 </ReactCrop> :
                                     <label htmlFor="choose">
                                         <IoIosImage />
