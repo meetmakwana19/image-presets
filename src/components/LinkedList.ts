@@ -1,51 +1,61 @@
-class node {
-    constructor(data) {
-        this.data = data
-        this.next = null
-        this.pre = null
-    }
-}
-class linkedList {
-    constructor() {
-        this.head = null
-        this.current = null
-    }
+class Node<T> {
+  data: T;
+  next: Node<T> | null;
+  pre: Node<T> | null;
 
-    insert(data) {
-        let newNode = new node(data)
-        if (this.head === null) {
-            this.head = newNode
-            this.current = newNode
-        } else {
-            let temp = this.head;
-            while (temp.next !== null) {
-                temp = temp.next
-            }
-            temp.next = newNode
-            newNode.pre = temp
-            this.current = newNode
-        }
-    }
-    undoEdit = () => {
-        const preData = this.current.pre
-        if (preData) {
-            this.current = preData
-            return preData.data
-        }else{
-            return null
-        }
-    }
-    redoEdit = () => {
-        const nextData = this.current.next
-        if (nextData) {
-            this.current = nextData
-            return nextData.data
-        }else{
-            return null
-        }
-    }
+  constructor(data: T) {
+    this.data = data;
+    this.next = null;
+    this.pre = null;
+  }
 }
 
-const storeData = new linkedList()
+class LinkedList<T> {
+  head: Node<T> | null;
+  current: Node<T> | null;
+
+  constructor() {
+    this.head = null;
+    this.current = null;
+  }
+
+  insert(data: T): void {
+    const newNode = new Node<T>(data);
+    if (this.head === null) {
+      this.head = newNode;
+      this.current = newNode;
+    } else {
+      let temp = this.head;
+      while (temp.next !== null) {
+        temp = temp.next;
+      }
+      temp.next = newNode;
+      newNode.pre = temp;
+      this.current = newNode;
+    }
+  }
+
+  undoEdit(): T | null {
+    const preNode = this.current?.pre;
+    if (preNode) {
+      this.current = preNode;
+      return preNode.data;
+    } else {
+      return null;
+    }
+  }
+
+  redoEdit(): T | null {
+    const nextNode = this.current?.next;
+    if (nextNode) {
+      this.current = nextNode;
+      return nextNode.data;
+    } else {
+      return null;
+    }
+  }
+}
+
+const storeData = new LinkedList<string>();
 
 export default storeData;
