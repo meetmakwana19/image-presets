@@ -8,6 +8,7 @@ import { IoMdUndo, IoMdRedo, IoIosImage } from 'react-icons/io'
 import storeData from './LinkedList';
 import "./Editor.css";
 import { IState } from "./types";
+import { dataURItoBlob } from './common/utils'
 
 const Editor = () => {
     const filterElement: Array<{ name: string; maxValue?: number }> = [
@@ -56,6 +57,8 @@ const Editor = () => {
         vertical: 1,
         horizontal: 1
     })
+    console.log("state is ----- ", state);
+
 
     const inputHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
         setState({
@@ -191,38 +194,36 @@ const Editor = () => {
             canvas.height
         )
 
-        canvas.toBlob((blob) => {
-            console.log("blob is ----- ", blob);
-            if (!blob) return;
+        // Since we already have the original file from input, we don't need to manipulate it on the frontend
+        const blob = dataURItoBlob(String(state.image));  // Convert data URL to Blob
 
-            const transformationData = {
-                rotate: state.rotate,
-                flipHorizontal: state.horizontal === -1 ? true : false,
-                flipVertical: state.vertical === -1 ? true : false,
-            };
-            // Create a FormData object and append the image blob
-            const formData = new FormData();
+        const transformationData = {
+            rotate: state.rotate,
+            flipHorizontal: state.horizontal === -1 ? true : false,
+            flipVertical: state.vertical === -1 ? true : false,
+        };
+        // Create a FormData object and append the image blob
+        const formData = new FormData();
 
-            // Append the image with the original name from user input
-            formData.append('image', blob, 'edited-image.png');
-            formData.append('transformations', JSON.stringify(transformationData));
+        // Append the image with the original name from user input
+        formData.append('image', blob, 'og-image.png');
+        formData.append('transformations', JSON.stringify(transformationData));
 
-            // Post request with FormData
-            fetch('http://localhost:8000/image-presets', {
-                method: 'POST',
-                body: formData,
+        // Post request with FormData
+        fetch('http://localhost:8000/image-presets', {
+            method: 'POST',
+            body: formData,
+        })
+            .then((res) => {
+                return res.json();
             })
-                .then((res) => {
-                    return res.json();
-                })
-                .then((data) => {
-                    console.log('Image saved successfully:', data);
-                })
-                .catch((error) => {
-                    console.error('Error saving image:', error);
-                });
+            .then((data) => {
+                console.log('Image saved successfully:', data);
+            })
+            .catch((error) => {
+                console.error('Error saving image:', error);
+            });
 
-        }, 'image/png')
 
         const link = document.createElement('a')
         link.download = 'image_edit.jpg'
