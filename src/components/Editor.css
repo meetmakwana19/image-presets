@@ -51,6 +51,9 @@
             text-transform: capitalize;
             font-size: 15px;
           }
+          button:hover{
+            filter: brightness(0.9);
+          }
         }
         span {
           font-size: 15px;
@@ -80,6 +83,10 @@
               color: #404040;
               text-transform: capitalize;
               background-color: lightgrey;
+            }
+            button:hover {
+              background-color: #646cff;
+              color: #fff;
             }
           }
           .filter_slider {
@@ -122,6 +129,9 @@
                 align-items: center;
                 cursor: pointer;
                 background-color: #646cff;
+              }
+              div:hover {
+                background-color: #535bf2;
               }
             }
           }
@@ -182,6 +192,9 @@
             font-weight: 600;
             text-transform: capitalize;
             font-size: 15px;
+          }
+          button:hover, label:hover {
+            filter: brightness(0.9);
           }
           .redo,
           .undo {
