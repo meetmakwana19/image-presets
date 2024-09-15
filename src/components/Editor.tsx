@@ -1,3 +1,4 @@
+import React from 'react'
 import { useState } from 'react'
 import ReactCrop, { Crop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
@@ -6,7 +7,7 @@ import { CgMergeVertical, CgMergeHorizontal } from 'react-icons/cg'
 import { IoMdUndo, IoMdRedo, IoIosImage } from 'react-icons/io'
 import storeData from './LinkedList';
 import "./Editor.css";
-import { IState } from "./Editor";
+import { IState } from "./types";
 
 const Editor = () => {
     const filterElement: Array<{ name: string; maxValue?: number }> = [

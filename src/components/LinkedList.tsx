@@ -1,4 +1,4 @@
-import IState from "./Editor";
+import { IState } from "./types";
 
 class Node<T> {
   data: T;
@@ -47,7 +47,7 @@ class LinkedList<T> {
     }
   }
 
-  redoEdit(): T | typeof IState | null {
+  redoEdit(): T | IState | null {
     const nextNode = this.current?.next;
     if (nextNode) {
       this.current = nextNode;
@@ -58,6 +58,6 @@ class LinkedList<T> {
   }
 }
 
-const storeData = new LinkedList<typeof IState | object>();
+const storeData = new LinkedList<IState | object>();
 
 export default storeData;
