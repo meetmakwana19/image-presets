@@ -18,11 +18,11 @@ const Editor = () => {
         },
         {
             name: 'grayscale',
-            maxValue: 200
+            maxValue: 100
         },
         {
             name: 'sepia',
-            maxValue: 200
+            maxValue: 100
         },
         {
             name: 'saturate',
@@ -33,7 +33,8 @@ const Editor = () => {
             maxValue: 200
         },
         {
-            name: 'hueRotate'
+            name: 'hueRotate',
+            maxValue: 360,
         }
     ]
     const [property, setProperty] = useState<{ name: string; maxValue?: number }>(
@@ -280,7 +281,7 @@ const Editor = () => {
                             <div className="filter_slider">
                                 <div className="label_bar">
                                     <label htmlFor="range">Filter adjustment</label>
-                                    <span>{state[property.name]}%</span>
+                                    <span>{state[property.name]}{property.name !== "hueRotate" ? "%" : "˚"}</span>
                                 </div>
                                 <input name={property.name} onChange={inputHandle} value={state[property.name]} max={property.maxValue} type="range" />
                             </div>
