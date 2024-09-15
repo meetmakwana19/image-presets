@@ -63,7 +63,7 @@ const Editor = () => {
     const inputHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
         setState({
             ...state,
-            [e.target.name]: e.target.value
+            [e.target.name]: +e.target.value
         })
     }
     const leftRotate = () => {
@@ -201,6 +201,12 @@ const Editor = () => {
             rotate: state.rotate,
             flipHorizontal: state.horizontal === -1 ? true : false,
             flipVertical: state.vertical === -1 ? true : false,
+            brightness: state.brightness,
+            grayscale: state.grayscale,
+            sepia: state.sepia,
+            saturate: state.saturate,
+            contrast: state.contrast,
+            hueRotate: state.hueRotate
         };
         // Create a FormData object and append the image blob
         const formData = new FormData();
