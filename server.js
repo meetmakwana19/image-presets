@@ -61,10 +61,8 @@ try {
     }
 
     try {
-      const transformations = JSON.parse(req.body.transformations);
+      const transformationData = JSON.parse(req.body.transformations);
 
-      const { rotate, flipHorizontal, flipVertical } = transformations;
-    
       const imagePath = path.join(__dirname, "uploads", req.file.filename);
       const outputImagePath = path.join(
         __dirname,
@@ -74,18 +72,50 @@ try {
 
       let image = sharp(imagePath);
 
-      image.rotate(rotate);
-      image.flip(flipHorizontal);
-      image.flop(flipVertical);
+      image.rotate(transformationData.rotate);
+      image.flip(transformationData.flipHorizontal);
+      image.flop(transformationData.flipVertical);
+
+      // Apply filters (brightness, grayscale, sepia, etc.)
+      image = image
+        .linear(
+          // ref : https://github.com/lovell/sharp/issues/1958
+          transformationData.contrast / 100,
+          -((128 * transformationData.contrast) / 100) + 128
+        )
+        .modulate({
+          brightness: transformationData.brightness / 100,
+          saturation: transformationData.saturate / 100,
+          hue: transformationData.hueRotate,
+        })
+        .grayscale(transformationData.grayscale > 0);
+
+      if (transformationData.sepia > 0) {
+        image = image
+          .modulate({
+            brightness: 1, // No change in brightness
+            saturation: 0.3, // Reduce saturation to mimic the sepia effect
+            hue: 30, // Adjust hue for the sepia tone
+          })
+          .tint({
+            r: Math.min(112 + transformationData.sepia / 100, 255), // Adjust values as per sepia transformation
+            g: Math.min(66 + transformationData.sepia / 100, 255), // Adjust values to balance green channel
+            b: Math.min(20 + transformationData.sepia / 100, 255), // Adjust values to balance blue channel
+          });
+      }
 
       // Save the processed image
-      await image.toFile(outputImagePath);
-
-      res.json({
-        message: "Image uploaded successfully",
-        file: req.file,
-        originalFile: req.file.filename,
-        processedFile: "sharpProcessed-" + req.file.filename,
+      image.toFile(`uploads/sharp-${req.file.filename}`, (err, info) => {
+        if (err) {
+          return res.status(500).json({ error: "Failed to process image" });
+        }
+        res.json({
+          message: "Image processed successfully",
+          file: req.file,
+          originalFile: req.file.filename,
+          processedFile: "sharpProcessed-" + req.file.filename,
+          info: info,
+        });
       });
     } catch (error) {
       console.error("Error processing image: ", error);
