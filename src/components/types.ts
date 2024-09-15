@@ -7,6 +7,6 @@ export interface IState {
   contrast: number;
   hueRotate: number;
   rotate: number;
-  vartical: number;
-  horizental: number;
+  vertical: number;
+  horizontal: number;
 }

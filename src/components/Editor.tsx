@@ -53,8 +53,8 @@ const Editor = () => {
         contrast: 100,
         hueRotate: 0,
         rotate: 0,
-        vartical: 1,
-        horizental: 1
+        vertical: 1,
+        horizontal: 1
     })
 
     const inputHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,23 +83,23 @@ const Editor = () => {
         stateData.rotate = state.rotate + 90
         storeData.insert(stateData)
     }
-    const varticalFlip = () => {
+    const verticalFlip = () => {
         setState({
             ...state,
-            vartical: state.vartical === 1 ? -1 : 1
+            vertical: state.vertical === 1 ? -1 : 1
         })
         const stateData = state
-        stateData.vartical = state.vartical === 1 ? -1 : 1
+        stateData.vertical = state.vertical === 1 ? -1 : 1
         storeData.insert(stateData)
     }
 
-    const horizentalFlip = () => {
+    const horizontalFlip = () => {
         setState({
             ...state,
-            horizental: state.horizental === 1 ? -1 : 1
+            horizontal: state.horizontal === 1 ? -1 : 1
         })
         const stateData = state
-        stateData.horizental = state.horizental === 1 ? -1 : 1
+        stateData.horizontal = state.horizontal === 1 ? -1 : 1
         storeData.insert(stateData)
     }
 
@@ -136,8 +136,8 @@ const Editor = () => {
                     contrast: 100,
                     hueRotate: 0,
                     rotate: 0,
-                    vartical: 1,
-                    horizental: 1
+                    vertical: 1,
+                    horizontal: 1
                 }
                 storeData.insert(stateData)
             }
@@ -181,7 +181,7 @@ const Editor = () => {
 
         ctx?.translate(canvas.width / 2, canvas.height / 2)
         ctx?.rotate(state.rotate * Math.PI / 180)
-        ctx?.scale(state.vartical, state.horizental)
+        ctx?.scale(state.vertical, state.horizontal)
 
         ctx?.drawImage(
             details as HTMLImageElement,
@@ -208,7 +208,7 @@ const Editor = () => {
                         <div className="image">
                             {
                                 state.image ? <ReactCrop crop={crop} onChange={c => setCrop(c)}>
-                                    <img onLoad={(e) => setDetails(e.currentTarget)} style={{ filter: `brightness(${state.brightness}%) brightness(${state.brightness}%) sepia(${state.sepia}%) saturate(${state.saturate}%) contrast(${state.contrast}%) grayscale(${state.grayscale}%) hue-rotate(${state.hueRotate}deg)`, transform: `rotate(${state.rotate}deg) scale(${state.vartical},${state.horizental})` }} src={state.image as string} alt="" />
+                                    <img onLoad={(e) => setDetails(e.currentTarget)} style={{ filter: `brightness(${state.brightness}%) brightness(${state.brightness}%) sepia(${state.sepia}%) saturate(${state.saturate}%) contrast(${state.contrast}%) grayscale(${state.grayscale}%) hue-rotate(${state.hueRotate}deg)`, transform: `rotate(${state.rotate}deg) scale(${state.vertical},${state.horizontal})` }} src={state.image as string} alt="" />
                                 </ReactCrop> :
                                     <label htmlFor="choose">
                                         <IoIosImage />
@@ -233,8 +233,8 @@ const Editor = () => {
                                 <div className="icon">
                                     <div onClick={leftRotate}><GrRotateLeft /></div>
                                     <div onClick={rightRotate}><GrRotateRight /></div>
-                                    <div onClick={varticalFlip}><CgMergeVertical /></div>
-                                    <div onClick={horizentalFlip}><CgMergeHorizontal /></div>
+                                    <div onClick={verticalFlip}><CgMergeVertical /></div>
+                                    <div onClick={horizontalFlip}><CgMergeHorizontal /></div>
                                 </div>
                             </div>
                             <div className="filter_slider">
