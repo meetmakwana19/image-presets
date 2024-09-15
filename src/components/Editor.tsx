@@ -9,6 +9,7 @@ import storeData from './LinkedList';
 import "./Editor.css";
 import { IState } from "./types";
 import { dataURItoBlob } from './common/utils'
+import "./switch.css"
 
 const Editor = () => {
     const filterElement: Array<{ name: string; maxValue?: number }> = [
@@ -16,14 +17,14 @@ const Editor = () => {
             name: 'brightness',
             maxValue: 200
         },
-        {
-            name: 'grayscale',
-            maxValue: 100
-        },
-        {
-            name: 'sepia',
-            maxValue: 100
-        },
+        // {
+        //     name: 'grayscale',
+        //     maxValue: 100
+        // },
+        // {
+        //     name: 'sepia',
+        //     maxValue: 100
+        // },
         {
             name: 'saturate',
             maxValue: 200
@@ -66,6 +67,19 @@ const Editor = () => {
             ...state,
             [e.target.name]: +e.target.value
         })
+    }
+    const handleSwitchToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.checked) {
+            setState({
+                ...state,
+                grayscale: 100
+            })
+        } else {
+            setState({
+                ...state,
+                grayscale: 0
+            })
+        }
     }
     const leftRotate = () => {
         setState({
@@ -291,6 +305,14 @@ const Editor = () => {
                                     {
                                         filterElement.map((v, i) => <button className={property.name === v.name ? 'active' : ''} onClick={() => setProperty(v)} key={i} >{v.name}</button>)
                                     }
+                                </div>
+                                <div className="bw-toggle">
+                                    B/W filter
+                                    <label className="switch">
+                                        <input type="checkbox" onChange={handleSwitchToggle} />
+                                        <span className="slider round"></span>
+                                    </label>
+
                                 </div>
                             </div>
 

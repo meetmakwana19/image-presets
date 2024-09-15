@@ -51,7 +51,7 @@
             text-transform: capitalize;
             font-size: 15px;
           }
-          button:hover{
+          button:hover {
             filter: brightness(0.9);
           }
         }
@@ -108,6 +108,15 @@
           }
           .filter_section {
             text-align: left;
+            color: #404040;
+            font-size: 15px;
+            text-transform: capitalize;
+            .bw-toggle {
+              display: flex;
+              align-items: center;
+              gap: 1rem;
+              margin-top: 1rem;
+            }
           }
           .rotate {
             text-align: left;
@@ -193,7 +202,8 @@
             text-transform: capitalize;
             font-size: 15px;
           }
-          button:hover, label:hover {
+          button:hover,
+          label:hover {
             filter: brightness(0.9);
           }
           .redo,
