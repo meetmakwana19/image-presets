@@ -4,6 +4,7 @@ import path from "path";
 import multer from "multer";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import sharp from "sharp";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -52,17 +53,44 @@ try {
   });
 
   // ROUTES :------------------------------------
-  app.post("/image-presets", upload.single("image"), (req, res) => {
+  app.post("/image-presets", upload.single("image"), async (req, res) => {
     console.log("Image route");
 
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
 
-    res.json({
-      message: "Image uploaded successfully",
-      file: req.file,
-    });
+    try {
+      const transformations = JSON.parse(req.body.transformations);
+
+      const { rotate, flipHorizontal, flipVertical } = transformations;
+    
+      const imagePath = path.join(__dirname, "uploads", req.file.filename);
+      const outputImagePath = path.join(
+        __dirname,
+        "uploads",
+        "sharpProcessed-" + req.file.filename
+      );
+
+      let image = sharp(imagePath);
+
+      image.rotate(rotate);
+      image.flip(flipHorizontal);
+      image.flop(flipVertical);
+
+      // Save the processed image
+      await image.toFile(outputImagePath);
+
+      res.json({
+        message: "Image uploaded successfully",
+        file: req.file,
+        originalFile: req.file.filename,
+        processedFile: "sharpProcessed-" + req.file.filename,
+      });
+    } catch (error) {
+      console.error("Error processing image: ", error);
+      return res.status(500).json({ error: "Error processing image" });
+    }
   });
 
   app.get("/ping", function (req, res) {

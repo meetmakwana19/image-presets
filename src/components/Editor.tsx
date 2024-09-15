@@ -191,6 +191,39 @@ const Editor = () => {
             canvas.height
         )
 
+        canvas.toBlob((blob) => {
+            console.log("blob is ----- ", blob);
+            if (!blob) return;
+
+            const transformationData = {
+                rotate: state.rotate,
+                flipHorizontal: state.horizontal === -1 ? true : false,
+                flipVertical: state.vertical === -1 ? true : false,
+            };
+            // Create a FormData object and append the image blob
+            const formData = new FormData();
+
+            // Append the image with the original name from user input
+            formData.append('image', blob, 'edited-image.png');
+            formData.append('transformations', JSON.stringify(transformationData));
+
+            // Post request with FormData
+            fetch('http://localhost:8000/image-presets', {
+                method: 'POST',
+                body: formData,
+            })
+                .then((res) => {
+                    return res.json();
+                })
+                .then((data) => {
+                    console.log('Image saved successfully:', data);
+                })
+                .catch((error) => {
+                    console.error('Error saving image:', error);
+                });
+
+        }, 'image/png')
+
         const link = document.createElement('a')
         link.download = 'image_edit.jpg'
         link.href = canvas.toDataURL()
