@@ -62,6 +62,20 @@ const Editor = () => {
     console.log("state is ----- ", state);
 
 
+    const handleReset = () => {
+        setState({
+            ...state,
+            brightness: 100,
+            grayscale: 0,
+            sepia: 0,
+            saturate: 100,
+            contrast: 100,
+            hueRotate: 0,
+            rotate: 0,
+            vertical: 1,
+            horizontal: 1
+        })
+    }
     const inputHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
         setState({
             ...state,
@@ -319,7 +333,7 @@ const Editor = () => {
 
                         </div>
                         <div className="action-buttons">
-                            <button className='reset'>Reset</button>
+                            <button className='reset' onClick={handleReset}>Reset</button>
                             <button onClick={saveImage} className='save'>Save Image</button>
                         </div>
                     </div>
