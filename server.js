@@ -34,7 +34,7 @@ try {
   const upload = multer({
     storage: storage, // Storage settings
     limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 10MB
-    fileFiler: (req, file, cb) => {
+    fileFilter: (req, file, cb) => {
       // Check file type (accept only images)
       const filetypes = /jpeg|jpg|png|gif|webp/;
 
@@ -72,6 +72,44 @@ try {
 
       let image = sharp(imagePath);
 
+      image
+        .metadata()
+        .then((metadata) => {
+          console.log("Image width: ", metadata.width);
+          console.log("Image height: ", metadata.height);
+        })
+        .catch((err) => {
+          console.error("Error retrieving image metadata:", err);
+        });
+
+      const metadata = await image.metadata();
+      image.extract({
+        left: Math.round(transformationData.crop.x),
+        top: Math.round(transformationData.crop.y),
+        // divide by 350 to get the actual width and height of the crop since the image is resized to 350px on UI
+        width: Math.round(
+          (transformationData.crop.width * metadata.width) / 350
+        ),
+        height: Math.round(
+          (transformationData.crop.height * metadata.height) / 350
+        ),
+      });
+
+      console.log("cropping with ----- x ", transformationData.crop.x);
+      console.log("cropping with ----- y ", transformationData.crop.y);
+      console.log(
+        "cropping with ----- width ",
+        Math.round((transformationData.crop.width * metadata.width) / 350),
+        " but got ",
+        transformationData.crop.width
+      );
+      console.log(
+        "cropping with ----- height ",
+        Math.round((transformationData.crop.height * metadata.height) / 350),
+        " but got ",
+        transformationData.crop.height
+      );
+
       image.rotate(transformationData.rotate);
       image.flip(transformationData.flipHorizontal);
       image.flop(transformationData.flipVertical);
@@ -107,7 +145,11 @@ try {
       // Save the processed image
       image.toFile(`uploads/sharp-${req.file.filename}`, (err, info) => {
         if (err) {
-          return res.status(500).json({ error: "Failed to process image" });
+          console.log("Error processing image: ", err);
+          return res.status(500).json({
+            message: "Failed to process image",
+            error: err,
+          });
         }
         res.json({
           message: "Image processed successfully",
