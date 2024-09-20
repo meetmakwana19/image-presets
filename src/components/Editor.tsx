@@ -60,7 +60,8 @@ const Editor = () => {
         horizontal: 1
     })
     console.log("state is ----- ", state);
-
+    const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
+    console.log("imageDimensions is ----- ", imageDimensions);
 
     const handleReset = () => {
         setState({
@@ -213,7 +214,7 @@ const Editor = () => {
 
         ctx?.translate(canvas.width / 2, canvas.height / 2)
         ctx?.rotate(state.rotate * Math.PI / 180)
-        ctx?.scale(state.vertical, state.horizontal)
+        // ctx?.scale(state.vertical, state.horizontal)
 
         ctx?.drawImage(
             details as HTMLImageElement,
@@ -235,7 +236,13 @@ const Editor = () => {
             sepia: state.sepia,
             saturate: state.saturate,
             contrast: state.contrast,
-            hueRotate: state.hueRotate
+            hueRotate: state.hueRotate,
+            crop: {
+                x: crop.x,
+                y: crop.y,
+                width: crop.width,
+                height: crop.height,
+            }
         };
         // Create a FormData object and append the image blob
         const formData = new FormData();
@@ -276,8 +283,18 @@ const Editor = () => {
                     <div className="image_section">
                         <div className="image">
                             {
-                                state.image ? <ReactCrop crop={crop} onChange={c => setCrop(c)}>
-                                    <img onLoad={(e) => setDetails(e.currentTarget)} style={{ filter: `brightness(${state.brightness}%) brightness(${state.brightness}%) sepia(${state.sepia}%) saturate(${state.saturate}%) contrast(${state.contrast}%) grayscale(${state.grayscale}%) hue-rotate(${state.hueRotate}deg)`, transform: `rotate(${state.rotate}deg) scale(${state.vertical},${state.horizontal})` }} src={state.image as string} alt="" />
+                                state.image ? <ReactCrop crop={crop} onChange={c =>
+                                    setCrop(c)
+                                }>
+                                    <img onLoad={(e) => {
+
+                                        const { naturalWidth, naturalHeight } = e.currentTarget;
+                                        setImageDimensions({
+                                            width: naturalWidth,
+                                            height: naturalHeight
+                                        });
+                                        setDetails(e.currentTarget)
+                                    }} style={{ filter: `brightness(${state.brightness}%) brightness(${state.brightness}%) sepia(${state.sepia}%) saturate(${state.saturate}%) contrast(${state.contrast}%) grayscale(${state.grayscale}%) hue-rotate(${state.hueRotate}deg)`, transform: `rotate(${state.rotate}deg) scale(${state.vertical},${state.horizontal})` }} src={state.image as string} alt="" />
                                 </ReactCrop> :
                                     <label htmlFor="choose">
                                         <IoIosImage />
