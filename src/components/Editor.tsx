@@ -62,6 +62,62 @@ const Editor = () => {
     console.log("state is ----- ", state);
     const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
     console.log("imageDimensions is ----- ", imageDimensions);
+    console.log("crop is ----- ", crop);
+
+    const adjustCrop = (naturalWidth: number, naturalHeight: number) => {
+        const containerWidth = 350;
+        const containerHeight = 350;
+
+        let newWidth = 100;
+        let newHeight = 100;
+        let xOffset = 0;
+        let yOffset = 0;
+
+        // Calculate the aspect ratios
+        const imageAspectRatio = naturalWidth / naturalHeight;
+
+        // If the image is wider than the container
+        if (imageAspectRatio > 1) {
+            // Fit image to the container's width
+            newWidth = containerWidth;
+            newHeight = containerWidth / imageAspectRatio;
+
+            // Center the image vertically within the container
+            xOffset = 0; // No horizontal offset
+            yOffset = (containerHeight - newHeight) / 2; // Center vertically
+        } else {
+            // Fit image to the container's height
+            newHeight = containerHeight;
+            newWidth = containerHeight * imageAspectRatio;
+
+            // Center the image horizontally within the container
+            xOffset = (containerWidth - newWidth) / 2; // Center horizontally
+            yOffset = 0; // No vertical offset
+        }
+
+        const restrictCrop = (crop: Crop) => {
+            // Ensure the crop's width and height do not exceed the container's boundaries
+            crop.width = Math.min(crop.width ?? 0, newWidth);
+            crop.height = Math.min(crop.height ?? 0, newHeight);
+
+            // Ensure the x and y offsets are within the boundaries
+            crop.x = Math.max(0, Math.min(crop.x ?? 0, containerWidth - (crop.width ?? 0)));
+            crop.y = Math.max(0, Math.min(crop.y ?? 0, containerHeight - (crop.height ?? 0)));
+
+            return crop;
+        };
+
+        // Set the new crop within the restricted boundaries
+        const restrictedCrop = restrictCrop({
+            unit: "px",
+            width: newWidth,
+            height: newHeight,
+            x: xOffset,
+            y: yOffset,
+        });
+
+        setCrop(restrictedCrop);
+    }
 
     const handleReset = () => {
         setState({
@@ -227,6 +283,24 @@ const Editor = () => {
         // Since we already have the original file from input, we don't need to manipulate it on the frontend
         const blob = dataURItoBlob(String(state.image));  // Convert data URL to Blob
 
+        const containerWidth = 350;
+        const containerHeight = 350;
+
+        const scaleX = imageDimensions.width / containerWidth;
+        const scaleY = imageDimensions.height / containerHeight;
+        console.log("scaleX is ----- ", scaleX);
+        console.log("scaleY is ----- ", scaleY);
+        
+        // Adjust the crop values based on the original image dimensions
+        const adjustedCrop = {
+            x: crop.x * scaleX,
+            y: crop.y * scaleY,
+            width: crop.width * scaleX,
+            height: crop.height * scaleY,
+        };
+        console.log("adjustedCrop is ----- ", adjustedCrop);
+        
+
         const transformationData = {
             rotate: state.rotate,
             flipHorizontal: state.horizontal === -1 ? true : false,
@@ -237,12 +311,7 @@ const Editor = () => {
             saturate: state.saturate,
             contrast: state.contrast,
             hueRotate: state.hueRotate,
-            crop: {
-                x: crop.x,
-                y: crop.y,
-                width: crop.width,
-                height: crop.height,
-            }
+            crop: adjustedCrop,
         };
         // Create a FormData object and append the image blob
         const formData = new FormData();
@@ -293,7 +362,11 @@ const Editor = () => {
                                             width: naturalWidth,
                                             height: naturalHeight
                                         });
-                                        setDetails(e.currentTarget)
+                                        setDetails(e.currentTarget);
+
+                                        // Adjust crop based on the image aspect ratio and canvas aspect ratio
+                                        adjustCrop(naturalWidth, naturalHeight);
+
                                     }} style={{ filter: `brightness(${state.brightness}%) brightness(${state.brightness}%) sepia(${state.sepia}%) saturate(${state.saturate}%) contrast(${state.contrast}%) grayscale(${state.grayscale}%) hue-rotate(${state.hueRotate}deg)`, transform: `rotate(${state.rotate}deg) scale(${state.vertical},${state.horizontal})` }} src={state.image as string} alt="" />
                                 </ReactCrop> :
                                     <label htmlFor="choose">
