@@ -119,6 +119,44 @@ const Editor = () => {
         setCrop(restrictedCrop);
     }
 
+    const handleCropOnRotate = (rotate: number) => {
+        const newCrop = { ...crop }; // Copy the current crop
+
+        let normalizedRotation = rotate % 360;
+
+        // Handle negative rotations
+        if (normalizedRotation < 0) {
+            normalizedRotation += 360;
+        }
+
+        // Handle case for 90°, 270°, etc.
+        if (normalizedRotation % 180 === 90) {
+            // Swap width and height of the crop area.
+            const tempWidth = newCrop.width;
+            newCrop.width = newCrop.height;
+            newCrop.height = tempWidth;
+
+            // Adjust x and y accordingly
+            const tempX = newCrop.x;
+            newCrop.x = newCrop.y;
+            newCrop.y = tempX;
+        }
+
+        // Handle case for 180°, 360°, etc.
+        if (normalizedRotation % 180 === 0) {
+            const tempWidth = newCrop.width;
+            newCrop.width = newCrop.height;
+            newCrop.height = tempWidth;
+
+            // Adjust x and y accordingly
+            const tempX = newCrop.x;
+            newCrop.x = newCrop.y;
+            newCrop.y = tempX;
+        }
+
+        setCrop(newCrop);
+    }
+
     const handleReset = () => {
         setState({
             ...state,
@@ -161,6 +199,8 @@ const Editor = () => {
         const stateData = state
         stateData.rotate = state.rotate - 90
         storeData.insert(stateData)
+
+        handleCropOnRotate(state.rotate);
     }
 
     const rightRotate = () => {
@@ -171,6 +211,8 @@ const Editor = () => {
         const stateData = state
         stateData.rotate = state.rotate + 90
         storeData.insert(stateData)
+
+        handleCropOnRotate(state.rotate);
     }
     const verticalFlip = () => {
         setState({
@@ -290,7 +332,7 @@ const Editor = () => {
         const scaleY = imageDimensions.height / containerHeight;
         console.log("scaleX is ----- ", scaleX);
         console.log("scaleY is ----- ", scaleY);
-        
+
         // Adjust the crop values based on the original image dimensions
         const adjustedCrop = {
             x: crop.x * scaleX,
@@ -299,7 +341,7 @@ const Editor = () => {
             height: crop.height * scaleY,
         };
         console.log("adjustedCrop is ----- ", adjustedCrop);
-        
+
 
         const transformationData = {
             rotate: state.rotate,
