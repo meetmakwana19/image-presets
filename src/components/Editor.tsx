@@ -119,40 +119,18 @@ const Editor = () => {
         setCrop(restrictedCrop);
     }
 
-    const handleCropOnRotate = (rotate: number) => {
+    const handleCropOnRotate = () => {
         const newCrop = { ...crop }; // Copy the current crop
 
-        let normalizedRotation = rotate % 360;
+        // Swap width and height of the crop area.
+        const tempWidth = newCrop.width;
+        newCrop.width = newCrop.height;
+        newCrop.height = tempWidth;
 
-        // Handle negative rotations
-        if (normalizedRotation < 0) {
-            normalizedRotation += 360;
-        }
-
-        // Handle case for 90°, 270°, etc.
-        if (normalizedRotation % 180 === 90) {
-            // Swap width and height of the crop area.
-            const tempWidth = newCrop.width;
-            newCrop.width = newCrop.height;
-            newCrop.height = tempWidth;
-
-            // Adjust x and y accordingly
-            const tempX = newCrop.x;
-            newCrop.x = newCrop.y;
-            newCrop.y = tempX;
-        }
-
-        // Handle case for 180°, 360°, etc.
-        if (normalizedRotation % 180 === 0) {
-            const tempWidth = newCrop.width;
-            newCrop.width = newCrop.height;
-            newCrop.height = tempWidth;
-
-            // Adjust x and y accordingly
-            const tempX = newCrop.x;
-            newCrop.x = newCrop.y;
-            newCrop.y = tempX;
-        }
+        // Adjust x and y accordingly
+        const tempX = newCrop.x;
+        newCrop.x = newCrop.y;
+        newCrop.y = tempX;
 
         setCrop(newCrop);
     }
@@ -200,7 +178,7 @@ const Editor = () => {
         stateData.rotate = state.rotate - 90
         storeData.insert(stateData)
 
-        handleCropOnRotate(state.rotate);
+        handleCropOnRotate();
     }
 
     const rightRotate = () => {
@@ -212,7 +190,7 @@ const Editor = () => {
         stateData.rotate = state.rotate + 90
         storeData.insert(stateData)
 
-        handleCropOnRotate(state.rotate);
+        handleCropOnRotate();
     }
     const verticalFlip = () => {
         setState({
