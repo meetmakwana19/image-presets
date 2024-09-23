@@ -135,6 +135,29 @@ const Editor = () => {
         setCrop(newCrop);
     }
 
+    const checkCropOnRotation = (rotate: number) => {
+        console.log("checkCropOnRotation rotate ---- ", rotate);
+
+        let normalizedRotation = rotate % 360;
+
+        // Handle negative rotations
+        if (normalizedRotation < 0) {
+            normalizedRotation += 360;
+        }
+
+        // Handle case for 90°, 270°, etc.
+        if (normalizedRotation % 180 === 90) {
+            console.log("checkCropOnRotation rotated 90 so true");
+
+            return true;
+        }
+        // Handle case for 180°, 360°, etc.
+        else if (normalizedRotation % 180 === 0) {
+            console.log("checkCropOnRotation rotated 0 so false");
+            return false;
+        }
+    }
+
     const handleReset = () => {
         setState({
             ...state,
@@ -318,7 +341,20 @@ const Editor = () => {
             width: crop.width * scaleX,
             height: crop.height * scaleY,
         };
+
+        console.log("crop while saving is ----- ", crop);
+
+        console.log("adjustedCrop checkCropOnRotation is ----- ", checkCropOnRotation(state.rotate));
+
+        const adjustedCrop2 = {
+            x: checkCropOnRotation(state.rotate) ? crop.y * scaleY : crop.x * scaleX,
+            y: checkCropOnRotation(state.rotate) ? crop.x * scaleX : crop.y * scaleY,
+            width: checkCropOnRotation(state.rotate) ? crop.height * scaleY : crop.width * scaleX,
+            height: checkCropOnRotation(state.rotate) ? crop.width * scaleX : crop.height * scaleY,
+        };
+
         console.log("adjustedCrop is ----- ", adjustedCrop);
+        console.log("adjustedCrop2 is ----- ", adjustedCrop2);
 
 
         const transformationData = {
@@ -331,7 +367,7 @@ const Editor = () => {
             saturate: state.saturate,
             contrast: state.contrast,
             hueRotate: state.hueRotate,
-            crop: adjustedCrop,
+            crop: adjustedCrop2,
         };
         // Create a FormData object and append the image blob
         const formData = new FormData();
