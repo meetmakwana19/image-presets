@@ -78,17 +78,21 @@ try {
         });
 
       const metadata = await image.metadata();
-      image.extract({
-        left: Math.round(transformationData.crop.x),
-        top: Math.round(transformationData.crop.y),
-        // divide by 350 to get the actual width and height of the crop since the image is resized to 350px on UI
-        width: Math.round(
-          (transformationData.crop.width * metadata.width) / 350
-        ),
-        height: Math.round(
-          (transformationData.crop.height * metadata.height) / 350
-        ),
-      });
+
+      console.log("rotating with -- ", transformationData.rotate);
+      image.rotate(transformationData.rotate);
+      image.flip(transformationData.flipHorizontal);
+      image.flop(transformationData.flipVertical);
+
+      const transformedMetadata = await image.metadata();
+      console.log(
+        "After transformations - Image width:",
+        transformedMetadata.width
+      );
+      console.log(
+        "After transformations - Image height:",
+        transformedMetadata.height
+      );
 
       console.log("cropping with ----- x ", transformationData.crop.x);
       console.log("cropping with ----- y ", transformationData.crop.y);
@@ -105,9 +109,14 @@ try {
         transformationData.crop.height
       );
 
-      image.rotate(transformationData.rotate);
-      image.flip(transformationData.flipHorizontal);
-      image.flop(transformationData.flipVertical);
+      // Crop the image
+      image.extract({
+        left: Math.round(transformationData.crop.x),
+        top: Math.round(transformationData.crop.y),
+        width: Math.round(transformationData.crop.width),
+        height: Math.round(transformationData.crop.height),
+        withoutEnlargement: true,
+      });
 
       // Apply filters (brightness, grayscale, sepia, etc.)
       image = image
