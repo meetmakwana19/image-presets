@@ -64,11 +64,6 @@ try {
       const transformationData = JSON.parse(req.body.transformations);
 
       const imagePath = path.join(__dirname, "uploads", req.file.filename);
-      const outputImagePath = path.join(
-        __dirname,
-        "uploads",
-        "sharpProcessed-" + req.file.filename
-      );
 
       let image = sharp(imagePath);
 
