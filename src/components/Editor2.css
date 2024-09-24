@@ -242,3 +242,8 @@
     }
   }
 }
+
+.cropper {
+  height: 600px;
+  background: #ddd;
+}
