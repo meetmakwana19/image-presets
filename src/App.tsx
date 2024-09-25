@@ -2,6 +2,7 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import Editor from './components/Editor'
+import Editor2 from './components/Editor2'
 
 function App() {
 
@@ -16,7 +17,7 @@ function App() {
         </a>
       </div>
       <h1>Image Presets</h1>
-      <Editor />
+      <Editor2 />
     </>
   )
 }

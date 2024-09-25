@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { useState } from 'react'
-import ReactCrop, { Crop } from 'react-image-crop'
+import { Crop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import { GrRotateLeft, GrRotateRight } from 'react-icons/gr'
 import { CgMergeVertical, CgMergeHorizontal } from 'react-icons/cg'
@@ -10,7 +10,15 @@ import "./Editor.css";
 import { IState } from "./types";
 import { dataURItoBlob } from './common/utils'
 import "./switch.css"
+import { CropperRef, Cropper } from 'react-advanced-cropper';
+import 'react-advanced-cropper/dist/style.css'
 
+interface ICropppingData {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
 const Editor = () => {
     const filterElement: Array<{ name: string; maxValue?: number }> = [
         {
@@ -44,8 +52,9 @@ const Editor = () => {
             maxValue: 200
         }
     )
-    const [details, setDetails] = useState<HTMLImageElement | string | null>('')
+    const [details, setDetails] = useState<HTMLImageElement | JSX.Element | string | null>('')
     const [crop, setCrop] = useState<Crop>({ unit: '%', width: 100, x: 0, y: 0, height: 100 })
+    const [croppingData, setCroppingData] = useState<ICropppingData>({ x: 0, y: 0, width: 0, height: 0 });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [state, setState] = useState<IState & { [key: string]: any }>({
         image: '',
@@ -59,11 +68,50 @@ const Editor = () => {
         vertical: 1,
         horizontal: 1
     })
+    const cropperRef = useRef(null);
+
+    const handleSetDetails = () => {
+        const cropperNode = cropperRef.current;
+        console.log("cropperNode is ----- ", cropperNode);
+
+        // @ts-expect-error for getImage
+        const sample = cropperNode?.getImage();
+        console.log("sample is ----- ", sample);
+
+
+        const imageElement = new Image();
+        imageElement.src = sample.src;
+        imageElement.width = sample.width;
+        imageElement.height = sample.height;
+
+        console.log("imageElement --- ", imageElement);
+
+
+        setDetails(imageElement);
+
+    };
+
+    const onChangeCropper = (cropper: CropperRef) => {
+        handleSetDetails();
+        console.log("Advanced cropper -- ", cropper.getCoordinates(), cropper.getCanvas());
+
+        const coordinates = cropper.getCoordinates();
+
+        setCroppingData({
+            x: coordinates?.left ?? 0,  // Fallback to 0 if undefined
+            y: coordinates?.top ?? 0,   // Fallback to 0 if undefined
+            width: coordinates?.width ?? 0,  // Fallback to 0 if undefined
+            height: coordinates?.height ?? 0 // Fallback to 0 if undefined
+        });
+    };
+
     console.log("state is ----- ", state);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
     console.log("imageDimensions is ----- ", imageDimensions);
     console.log("crop is ----- ", crop);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const adjustCrop = (naturalWidth: number, naturalHeight: number) => {
         const containerWidth = 350;
         const containerHeight = 350;
@@ -308,6 +356,8 @@ const Editor = () => {
         canvas.width = (details as HTMLImageElement)?.naturalWidth
         canvas.height = (details as HTMLImageElement)?.naturalHeight
         const ctx = canvas.getContext('2d')
+        console.log("ctx is ----- ", ctx);
+        console.log("details is ----- ", details);
 
         ctx!.filter = `brightness(${state.brightness}%) brightness(${state.brightness}%) sepia(${state.sepia}%) saturate(${state.saturate}%) contrast(${state.contrast}%) grayscale(${state.grayscale}%) hue-rotate(${state.hueRotate}deg)`
 
@@ -353,6 +403,13 @@ const Editor = () => {
             height: checkCropOnRotation(state.rotate) ? crop.width * scaleX : crop.height * scaleY,
         };
 
+        const adjustedCrop3 = {
+            x: checkCropOnRotation(state.rotate) ? croppingData.y : croppingData.x,
+            y: checkCropOnRotation(state.rotate) ? croppingData.x : croppingData.y,
+            width: checkCropOnRotation(state.rotate) ? croppingData.height : croppingData.width,
+            height: checkCropOnRotation(state.rotate) ? croppingData.width : croppingData.height,
+        }
+
         console.log("adjustedCrop is ----- ", adjustedCrop);
         console.log("adjustedCrop2 is ----- ", adjustedCrop2);
 
@@ -367,7 +424,7 @@ const Editor = () => {
             saturate: state.saturate,
             contrast: state.contrast,
             hueRotate: state.hueRotate,
-            crop: adjustedCrop2,
+            crop: adjustedCrop3,
         };
         // Create a FormData object and append the image blob
         const formData = new FormData();
@@ -404,27 +461,43 @@ const Editor = () => {
                     <h2>Image Editor</h2>
                 </div>
                 <div className="card_body">
-
                     <div className="image_section">
                         <div className="image">
                             {
-                                state.image ? <ReactCrop crop={crop} onChange={c =>
-                                    setCrop(c)
-                                }>
-                                    <img onLoad={(e) => {
+                                state.image ?
+                                    <Cropper
+                                        src={state.image as string}
+                                        onChange={onChangeCropper}
+                                        className={'cropper'}
+                                        style={{
+                                            filter: `brightness(${state.brightness}%) contrast(${state.contrast}%) sepia(${state.sepia}%) 
+                                             saturate(${state.saturate}%) grayscale(${state.grayscale}%) 
+                                             hue-rotate(${state.hueRotate}deg)`,
+                                            transform: `rotate(${state.rotate}deg) scale(${state.vertical}, ${state.horizontal})`
+                                        }}
+                                        ref={cropperRef}
+                                    />
 
-                                        const { naturalWidth, naturalHeight } = e.currentTarget;
-                                        setImageDimensions({
-                                            width: naturalWidth,
-                                            height: naturalHeight
-                                        });
-                                        setDetails(e.currentTarget);
-
-                                        // Adjust crop based on the image aspect ratio and canvas aspect ratio
-                                        adjustCrop(naturalWidth, naturalHeight);
-
-                                    }} style={{ filter: `brightness(${state.brightness}%) brightness(${state.brightness}%) sepia(${state.sepia}%) saturate(${state.saturate}%) contrast(${state.contrast}%) grayscale(${state.grayscale}%) hue-rotate(${state.hueRotate}deg)`, transform: `rotate(${state.rotate}deg) scale(${state.vertical},${state.horizontal})` }} src={state.image as string} alt="" />
-                                </ReactCrop> :
+                                    /*
+                                    <ReactCrop crop={crop} onChange={c =>
+                                        setCrop(c)
+                                    }>
+                                        <img onLoad={(e) => {
+    
+                                            const { naturalWidth, naturalHeight } = e.currentTarget;
+                                            setImageDimensions({
+                                                width: naturalWidth,
+                                                height: naturalHeight
+                                            });
+                                            setDetails(e.currentTarget);
+    
+                                            // Adjust crop based on the image aspect ratio and canvas aspect ratio
+                                            adjustCrop(naturalWidth, naturalHeight);
+    
+                                        }} style={{ filter: `brightness(${state.brightness}%) brightness(${state.brightness}%) sepia(${state.sepia}%) saturate(${state.saturate}%) contrast(${state.contrast}%) grayscale(${state.grayscale}%) hue-rotate(${state.hueRotate}deg)`, transform: `rotate(${state.rotate}deg) scale(${state.vertical},${state.horizontal})` }} src={state.image as string} alt="" />
+                                    </ReactCrop> 
+                                    */
+                                    :
                                     <label htmlFor="choose">
                                         <IoIosImage />
                                         <span>Choose Image</span>
