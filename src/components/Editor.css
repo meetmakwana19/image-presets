@@ -152,8 +152,8 @@
         height: 350px;
         background-color: #f0f0f0;
         /* display: flex; */
-        justify-content: center;
-        align-items: center;
+        /* justify-content: center;
+        align-items: center; */
         /* overflow: hidden; Ensure overflow is hidden */
 
         .image {
